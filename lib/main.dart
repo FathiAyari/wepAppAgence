@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:concentric_transition/page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 void main() {
@@ -7,7 +8,9 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({Key key}) : super(key: key);
+
+
 
   // This widget is the root of your application.
   @override
@@ -18,8 +21,8 @@ class MyApp extends StatelessWidget {
 
         primarySwatch: Colors.blue,
       ),
-      home:Scaffold(
-        body: call(),
+      home:const Scaffold(
+
       )
     );
   }
