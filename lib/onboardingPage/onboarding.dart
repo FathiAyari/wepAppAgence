@@ -5,6 +5,8 @@ import '';
 
 
 class onboarding extends StatelessWidget {
+  const onboarding({Key key}) : super(key: key);
+
 
 
   @override

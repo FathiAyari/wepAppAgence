@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "436384956274",
+    "project_id": "springpush-11bff",
+    "storage_bucket": "springpush-11bff.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:436384956274:android:7434b45a606c086924a7eb",
+        "android_client_info": {
+          "package_name": "com.example.trivawgo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "436384956274-3ghlgfg6k39c07mmf3c8s5ldiserjm1t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmBDN45wkz27aBuHK9x7j5h7qgtVH8wjQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "436384956274-3ghlgfg6k39c07mmf3c8s5ldiserjm1t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
