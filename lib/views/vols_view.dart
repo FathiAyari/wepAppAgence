@@ -4,17 +4,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class ClickedItem extends StatefulWidget {
+class VolsView extends StatefulWidget {
   final String footer;
-  const ClickedItem({this.footer});
+  const VolsView({this.footer});
 
   @override
-  _ClickedItemState createState() => _ClickedItemState();
+  _VolsViewState createState() => _VolsViewState();
 }
 
-class _ClickedItemState extends State<ClickedItem> {
+class _VolsViewState extends State<VolsView> {
   Future CallApi() async {
-    var target = await http.get(Uri.parse("http://192.168.1.17:8080/"));
+    var target = await http.get(Uri.parse("http://192.168.1.17:8080/hotel"));
     var result = jsonDecode(target.body);
 
     return result;
@@ -48,18 +48,15 @@ class _ClickedItemState extends State<ClickedItem> {
                   return SafeArea(
                     child: Container(
                       child: ListView.builder(
-                          itemCount: snapshot.data.length,
+                          itemCount: 1,
                           itemBuilder: (context, index) {
-                            return Text(
-                              "${snapshot.data[index][0]}",
-                              style: TextStyle(color: Colors.white),
-                            );
+                            return ListTile();
                           }),
                     ),
                   );
                 } else {
                   return Container(
-                    child: const CircularProgressIndicator(),
+                    child: Center(child: const CircularProgressIndicator()),
                   );
                 }
               },

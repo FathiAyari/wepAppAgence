@@ -5,20 +5,27 @@ import 'package:flutter/material.dart';
 import 'package:get/get_utils/src/extensions/string_extensions.dart';
 import 'package:http/http.dart' as http;
 
-class VoyageView extends StatefulWidget {
+class HotelView extends StatefulWidget {
   final String footer;
-  const VoyageView({this.footer});
+  const HotelView({this.footer});
 
   @override
-  _VoyageViewState createState() => _VoyageViewState();
+  _HotelView createState() => _HotelView();
 }
 
-class _VoyageViewState extends State<VoyageView> {
-  Future CallApi() async {
-    var target = await http.get(Uri.parse("http://192.168.1.17:8080/voyages"));
+class _HotelView extends State<HotelView> {
+  Stream<List> CallApi() async* {
+    var target = await http.get(Uri.parse("http://192.168.1.17:8080/hotel"));
     var result = jsonDecode(target.body);
 
-    return result;
+    yield result;
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    CallApi();
   }
 
   @override
@@ -35,8 +42,8 @@ class _VoyageViewState extends State<VoyageView> {
         ),
         body: Container(
             decoration: const BoxDecoration(color: Colors.black87),
-            child: FutureBuilder(
-              future: CallApi(),
+            child: StreamBuilder(
+              stream: CallApi(),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
                   return SafeArea(
@@ -105,42 +112,47 @@ class _VoyageViewState extends State<VoyageView> {
                                         ),
                                         Expanded(
                                           flex: 2,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  const Icon(
-                                                    Icons.login,
-                                                    color: Colors.green,
-                                                  ),
-                                                  Text(
-                                                    "Depart:${snapshot.data[index]["depart"].split(" ")[0]}",
-                                                    style: const TextStyle(
-                                                        fontSize: 20),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  const Icon(
-                                                    Icons.location_on_outlined,
-                                                    color: Colors.redAccent,
-                                                  ),
-                                                  Expanded(
-                                                    child: Text(
-                                                      "Destination: ${snapshot.data[index]["destination"]}"
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.login,
+                                                      color: Colors.green,
+                                                    ),
+                                                    Text(
+                                                      "Entrée:${snapshot.data[index]["entre"].split(" ")[0]}"
                                                           .capitalizeFirst,
                                                       style: const TextStyle(
                                                           fontSize: 20),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.logout,
+                                                      color: Colors.redAccent,
+                                                    ),
+                                                    Expanded(
+                                                      child: Text(
+                                                        "Sortie:${snapshot.data[index]["sortie"].split(" ")[0]}"
+                                                            .capitalizeFirst,
+                                                        style: const TextStyle(
+                                                            fontSize: 20),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -175,17 +187,15 @@ class _VoyageViewState extends State<VoyageView> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    "Type: ${snapshot.data[index]["type"]}"
-                                                        .capitalizeFirst,
+                                                    "Pays:${snapshot.data[index]["pays"]}",
                                                     style:
                                                         TextStyle(fontSize: 20),
                                                   ),
                                                   Row(
                                                     children: [
                                                       Text(
-                                                        "Chambre: ${snapshot.data[index]["chambre"]}"
-                                                            .capitalizeFirst,
-                                                        style: const TextStyle(
+                                                        "Chambre: ${snapshot.data[index]["chambre"]}",
+                                                        style: TextStyle(
                                                             fontSize: 20),
                                                       ),
                                                       const SizedBox(
@@ -201,8 +211,7 @@ class _VoyageViewState extends State<VoyageView> {
                                                   Row(
                                                     children: [
                                                       Text(
-                                                        "Adultes: ${snapshot.data[index]["adulte"]}"
-                                                            .capitalizeFirst,
+                                                        "Adultes: ${snapshot.data[index]["adulte"]}",
                                                         style: const TextStyle(
                                                             fontSize: 20),
                                                       ),
@@ -215,6 +224,11 @@ class _VoyageViewState extends State<VoyageView> {
                                                             Colors.cyanAccent,
                                                       )
                                                     ],
+                                                  ),
+                                                  Text(
+                                                    "Logement:${snapshot.data[index]["logement"]}",
+                                                    style:
+                                                        TextStyle(fontSize: 20),
                                                   ),
                                                 ],
                                               ),
@@ -233,32 +247,28 @@ class _VoyageViewState extends State<VoyageView> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    "Interets: ${snapshot.data[index]["interets"]}"
-                                                        .capitalizeFirst,
-                                                    style: const TextStyle(
-                                                        fontSize: 20),
+                                                    "Destination:${snapshot.data[index]["destination"]}",
+                                                    style:
+                                                        TextStyle(fontSize: 20),
                                                   ),
                                                   Row(
                                                     children: [
                                                       Text(
-                                                        "Jours: ${snapshot.data[index]["jours"]}"
-                                                            .capitalizeFirst,
-                                                        style: const TextStyle(
+                                                        "Etoiles:${snapshot.data[index]["etoiles"]}",
+                                                        style: TextStyle(
                                                             fontSize: 20),
                                                       ),
                                                       const Icon(
-                                                        Icons.timelapse_sharp,
-                                                        color:
-                                                            Colors.purpleAccent,
+                                                        Icons.star,
+                                                        color: Colors.amber,
                                                       )
                                                     ],
                                                   ),
                                                   Row(
                                                     children: [
                                                       Text(
-                                                        "Enfants: ${snapshot.data[index]["enfant"]}"
-                                                            .capitalizeFirst,
-                                                        style: const TextStyle(
+                                                        "Enfants:${snapshot.data[index]["enfant"]}",
+                                                        style: TextStyle(
                                                             fontSize: 20),
                                                       ),
                                                       const Icon(
@@ -267,6 +277,11 @@ class _VoyageViewState extends State<VoyageView> {
                                                             Colors.pinkAccent,
                                                       )
                                                     ],
+                                                  ),
+                                                  Text(
+                                                    "Vue:${snapshot.data[index]["vue"]}",
+                                                    style:
+                                                        TextStyle(fontSize: 20),
                                                   ),
                                                 ],
                                               ),
@@ -280,6 +295,130 @@ class _VoyageViewState extends State<VoyageView> {
                               ],
                             );
                           }),
+
+                      /*ListView.builder(
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 3, horizontal: 10),
+                              height: 150,
+                              child: Card(
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  side: const BorderSide(
+                                      color: Colors.black26, width: 1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                elevation: 3,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: CircleAvatar(
+                                                radius: 25,
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                child: Image.asset(
+                                                    'assets/avatar.png'),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                "${snapshot.data[index]["nom"]}"
+                                                    .capitalizeFirst,
+                                                style: const TextStyle(
+                                                    fontSize: 20,
+                                                    fontFamily:
+                                                        "NewsCycle-Bold"),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                  "${snapshot.data[index]["prenom"]}"
+                                                      .capitalizeFirst,
+                                                  style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontFamily:
+                                                          "NewsCycle-Bold")),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 2,
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.location_on_outlined,
+                                                    color: Colors.pinkAccent,
+                                                  ),
+                                                  Text(
+                                                    "${snapshot.data[index]["adresse"]}"
+                                                        .capitalizeFirst,
+                                                    style: const TextStyle(
+                                                        fontSize: 20),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.email_outlined,
+                                                    color: Colors.blueAccent,
+                                                  ),
+                                                  Text(
+                                                    "${snapshot.data[index]["email"]}",
+                                                    style: const TextStyle(
+                                                        fontSize: 20),
+                                                    maxLines: 2,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.phone,
+                                                    color: Colors.green,
+                                                  ),
+                                                  Text(
+                                                    "${snapshot.data[index]["phone"]}",
+                                                    style: const TextStyle(
+                                                      fontSize: 20,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          })*/
                     ),
                   );
                 } else {

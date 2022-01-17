@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,7 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:http/http.dart' as http;
-import 'package:trivawgo/clicked_item.dart';
+import 'package:trivawgo/views/client_view.dart';
+import 'package:trivawgo/views/hotel_view.dart';
+import 'package:trivawgo/views/vols_view.dart';
+import 'package:trivawgo/views/voyage_view.dart';
+
+import 'Drawer/drawer.dart';
 
 class home_page extends StatefulWidget {
   @override
@@ -18,15 +24,9 @@ class home_page extends StatefulWidget {
 class _home_pageState extends State<home_page> {
   var mytoken;
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-
+  var currentIndex;
   Future callApi() async {
     List count = [2];
-
-    List api = [
-      "http://192.168.1.17:8080/hotels",
-      "http://192.168.1.17:8080/voyages",
-      "http://192.168.1.17:8080/clients",
-    ];
 
     var countItems =
         await http.get(Uri.parse("http://192.168.1.17:8080/entities"));
@@ -84,89 +84,109 @@ class _home_pageState extends State<home_page> {
     );
   }
 
+  List pages = [home_page(), DrawerPage()];
+  List<BottomNavyBarItem> items = [
+    BottomNavyBarItem(
+      icon: Icon(Icons.home_outlined),
+      title: Text("Acceuil"),
+      activeColor: Colors.white,
+    ),
+    BottomNavyBarItem(
+      icon: const Icon(
+        Icons.settings,
+        size: 30,
+      ),
+      activeColor: Colors.white,
+      title: const Text("Parametres"),
+    ),
+  ];
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     Firebase.initializeApp();
     callApi();
-    /*firebaseMessaging.getToken().then((token) {
+    firebaseMessaging.getToken().then((token) {
       assert(token != null);
       setState(() {
         mytoken = token;
         print(mytoken);
       });
-    });*/
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          backgroundColor: Colors.black87,
-          body: WillPopScope(
-            onWillPop: () {
-              return showDialog(
-                  context: context,
-                  builder: (context) {
-                    return CupertinoAlertDialog(
-                      content: const Text(" êtes-vous sûr de sortir ?"),
-                      actions: [Negative(context), Positive()],
-                    );
-                  });
-            },
-            child: Container(
-              decoration: const BoxDecoration(color: Colors.black87),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 30),
-                    child: Row(
-                      textBaseline: TextBaseline.alphabetic,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Bonjour Mr Hosni.",
-                          style: TextStyle(fontSize: 25, color: Colors.white),
-                        ),
-                        CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.transparent,
-                          child: Image.asset('assets/avatar.png'),
-                        )
-                      ],
-                    ),
+        backgroundColor: Colors.white10,
+        appBar: AppBar(
+          actions: [
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: Colors.transparent,
+              child: Image.asset('assets/avatar.png'),
+            ),
+          ],
+          backgroundColor: Colors.black26,
+          elevation: 0,
+          title: Text(
+            "Bonjour Mr Hosni.",
+          ),
+        ),
+        body: WillPopScope(
+          onWillPop: () {
+            return showDialog(
+                context: context,
+                builder: (context) {
+                  return CupertinoAlertDialog(
+                    content: const Text(" êtes-vous sûr de sortir ?"),
+                    actions: [Negative(context), Positive()],
+                  );
+                });
+          },
+          child: Container(
+            decoration: const BoxDecoration(color: Colors.black26),
+            child: Column(
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                  child: Row(
+                    textBaseline: TextBaseline.alphabetic,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [],
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: FutureBuilder(
-                        future: callApi(),
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (snapshot.hasData) {
-                            return GridView.builder(
-                              itemCount: contentList.length,
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: (2),
-                                      crossAxisSpacing: 15,
-                                      mainAxisSpacing: 15),
-                              itemBuilder: (context, int index) {
-                                return Stack(
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: FutureBuilder(
+                      future: callApi(),
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if (snapshot.hasData) {
+                          return GridView(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: (2),
+                                    crossAxisSpacing: 15,
+                                    mainAxisSpacing: 15),
+                            children: [
+                              InkWell(
+                                child: Stack(
                                   alignment: Alignment.topRight,
                                   children: [
-                                    contentList[index],
+                                    contentList[0],
                                     Stack(children: [
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 2, horizontal: 2),
                                         child: CircleAvatar(
-                                          backgroundColor: colorsList[index],
+                                          backgroundColor: colorsList[0],
                                           child: Text(
-                                            "${snapshot.data[index]}",
+                                            "${snapshot.data[0]}",
                                             style: const TextStyle(
                                                 color: Colors.white),
                                           ),
@@ -182,21 +202,152 @@ class _home_pageState extends State<home_page> {
                                       )
                                     ]),
                                   ],
-                                );
-                              },
-                            );
-                          } else {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-                        },
-                      ),
+                                ),
+                                onTap: () {
+                                  Get.to(ClientView(
+                                      footer: contentList[0].footer));
+                                },
+                              ),
+                              InkWell(
+                                child: Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    contentList[1],
+                                    Stack(children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2, horizontal: 2),
+                                        child: CircleAvatar(
+                                          backgroundColor: colorsList[1],
+                                          child: Text(
+                                            "${snapshot.data[1]}",
+                                            style: const TextStyle(
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                      const Padding(
+                                        padding: EdgeInsetsDirectional.only(
+                                            top: 5, start: 2),
+                                        child: CircleAvatar(
+                                          radius: 5,
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      )
+                                    ]),
+                                  ],
+                                ),
+                                onTap: () {
+                                  Get.to(
+                                      VolsView(footer: contentList[1].footer));
+                                },
+                              ),
+                              InkWell(
+                                child: Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    contentList[2],
+                                    Stack(children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2, horizontal: 2),
+                                        child: CircleAvatar(
+                                          backgroundColor: colorsList[2],
+                                          child: Text(
+                                            "${snapshot.data[2]}",
+                                            style: const TextStyle(
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                      const Padding(
+                                        padding: EdgeInsetsDirectional.only(
+                                            top: 5, start: 2),
+                                        child: CircleAvatar(
+                                          radius: 5,
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      )
+                                    ]),
+                                  ],
+                                ),
+                                onTap: () {
+                                  Get.to(
+                                      HotelView(footer: contentList[2].footer));
+                                },
+                              ),
+                              InkWell(
+                                child: Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    contentList[3],
+                                    Stack(children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2, horizontal: 2),
+                                        child: CircleAvatar(
+                                          backgroundColor: colorsList[3],
+                                          child: Text(
+                                            "${snapshot.data[3]}",
+                                            style: const TextStyle(
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                      const Padding(
+                                        padding: EdgeInsetsDirectional.only(
+                                            top: 5, start: 2),
+                                        child: CircleAvatar(
+                                          radius: 5,
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      )
+                                    ]),
+                                  ],
+                                ),
+                                onTap: () {
+                                  Get.to(VoyageView(
+                                      footer: contentList[3].footer));
+                                },
+                              )
+                            ],
+                          );
+                        } else {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                      },
                     ),
-                  )
-                ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+        bottomNavigationBar: Container(
+          color: Colors.black38,
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Container(
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(10)),
+              margin: EdgeInsets.symmetric(horizontal: 70),
+              child: BottomNavyBar(
+                onItemSelected: (int value) {
+                  setState(() {
+                    currentIndex = value;
+                  });
+                },
+                selectedIndex: currentIndex,
+                itemCornerRadius: 15,
+                items: items,
+                backgroundColor: Color(0xff161617),
+                showElevation: false,
               ),
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -213,46 +364,38 @@ class Content extends StatelessWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Get.to(ClickedItem(
-          footer: footer,
-        ));
-      },
-      child: Container(
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            /*         Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
+    return Container(
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          /*         Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
 
-              ],
-            ),*/
-            Expanded(
-                flex: 2,
-                child: Image.asset(
-                  image,
-                  fit: BoxFit.fill,
-                )),
-            Expanded(
-              child: Container(
-                alignment: Alignment.center,
-                child: Text(
-                  footer,
-                  style:
-                      const TextStyle(fontSize: 20, fontFamily: "EBGaramond"),
-                  textAlign: TextAlign.center,
-                ),
+            ],
+          ),*/
+          Expanded(
+              flex: 2,
+              child: Image.asset(
+                image,
+                fit: BoxFit.fill,
+              )),
+          Expanded(
+            child: Container(
+              alignment: Alignment.center,
+              child: Text(
+                footer,
+                style: const TextStyle(fontSize: 20, fontFamily: "EBGaramond"),
+                textAlign: TextAlign.center,
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }
